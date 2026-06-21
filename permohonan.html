@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SINERGY – Permohonan PPKH</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link rel="stylesheet" href="sinergy.css" />
+</head>
+<body>
+
+  <!-- Firebase Setup Wizard (sama persis dengan index.html) -->
+  <div id="fb-setup-overlay" class="hidden">
+    <div class="fb-setup-card">
+      <div class="fb-setup-logo">
+        <img src="https://sinergy.planologi.kehutanan.go.id/favicon.png"
+             onerror="this.style.display='none'" alt="SINERGY" />
+        <span>SINERGY Replica</span>
+      </div>
+      <div class="fb-setup-title">Konfigurasi Firebase Database</div>
+      <div class="fb-setup-desc">
+        Masukkan URL Firebase Realtime Database yang akan digunakan sebagai penyimpanan data replika ini.
+      </div>
+      <div class="fb-setup-label">Firebase Database URL</div>
+      <input id="fb-url-input" class="fb-setup-input" type="url"
+             placeholder="https://nama-project-default-rtdb.asia-southeast1.firebasedatabase.app"
+             autocomplete="off" spellcheck="false" />
+      <div class="fb-setup-hint">
+        Temukan URL ini di <code>Firebase Console → Realtime Database → Data</code>
+      </div>
+      <div class="fb-setup-actions">
+        <span id="fb-test-result" class="fb-setup-test-result" style="display:none"></span>
+        <button class="fb-setup-btn-test" onclick="testFirebaseUrl()">Test Koneksi</button>
+        <button class="fb-setup-btn-save" id="fb-save-btn" onclick="saveFirebaseUrl()">Simpan & Mulai</button>
+      </div>
+    </div>
+  </div>
+
+<div id="app">
+
+  <!-- HEADER (identik dengan index.html) -->
+  <header id="header">
+    <button class="menu-btn" onclick="toggleSidebar()" title="Toggle Menu">
+      <span class="material-icons">menu</span>
+    </button>
+    <div class="spacer"></div>
+    <div class="header-actions">
+      <button id="role-toggle-btn" onclick="toggleAppRole()" title="Klik untuk switch role"
+        style="display:inline-flex;align-items:center;gap:6px;background:#1a6e42;color:white;border:none;border-radius:20px;padding:5px 14px 5px 10px;font-size:12px;font-weight:600;cursor:pointer;letter-spacing:.3px;margin-right:8px;box-shadow:0 1px 4px rgba(0,0,0,.18);transition:background .2s;">
+        <span class="material-icons" style="font-size:16px;" id="role-icon">admin_panel_settings</span>
+        <span id="role-label">SUPERADMIN</span>
+        <span class="material-icons" style="font-size:14px;opacity:.7;margin-left:2px;">swap_horiz</span>
+      </button>
+      <button id="fb-status-btn" onclick="openFbSetup()" title="Status koneksi Firebase">
+        <span class="fb-dot checking" id="fb-dot"></span>
+        <span id="fb-status-label">Menghubungkan...</span>
+      </button>
+      <button class="notif-btn" title="Notifikasi">
+        <span class="material-icons">notifications</span>
+        <span class="notif-badge">0</span>
+      </button>
+      <button class="user-btn" onclick="toggleUserMenu()" title="Akun saya">
+        <div class="user-avatar"><span class="material-icons">person</span></div>
+      </button>
+      <div class="user-dropdown" id="userDropdown">
+        <div class="dd-item" onclick="goToPage('index.html')">
+          <span class="material-icons">home</span> Beranda
+        </div>
+        <hr class="dd-sep" />
+        <div class="dd-item logout" onclick="pmhLogout()">
+          <span class="material-icons">logout</span> Logout
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div id="overlay" onclick="closeSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <nav id="sidebar">
+    <a class="sidebar-logo" onclick="goToPage('index.html')">
+      <img class="favicon"
+        src="https://sinergy.planologi.kehutanan.go.id/favicon.png"
+        onerror="this.style.display='none'" alt="SINERGY" />
+      <span class="logo-text">SINERGY</span>
+    </a>
+
+    <!-- Beranda → kembali ke index.html -->
+    <a class="nav-item" onclick="goToPage('index.html')">
+      <span class="material-icons">home</span>
+      <span class="nav-label">Beranda</span>
+    </a>
+
+    <!-- PERMOHONAN PPKH -->
+    <div class="nav-group">
+      <div class="nav-group-header open" onclick="toggleGroup('grp-permohonan')">
+        <span class="material-icons group-icon">send</span>
+        <span class="group-label">Permohonan PPKH</span>
+        <span class="material-icons expand-icon">expand_more</span>
+      </div>
+      <div class="nav-sub open" id="grp-permohonan">
+        <a class="nav-item" id="nav-permohonan-baru" onclick="navigate('permohonan-baru')">
+          <span class="material-icons">send</span>
+          <span class="nav-label">Permohonan Baru</span>
+        </a>
+        <a class="nav-item" id="nav-terkait-komitmen" onclick="navigate('terkait-komitmen')">
+          <span class="material-icons">assignment</span>
+          <span class="nav-label">Terkait Komitmen</span>
+        </a>
+        <a class="nav-item" id="nav-perpanjangan" onclick="navigate('perpanjangan')">
+          <span class="material-icons">history</span>
+          <span class="nav-label">Perpanjangan</span>
+        </a>
+        <a class="nav-item" id="nav-perubahan" onclick="navigate('perubahan')">
+          <span class="material-icons">border_color</span>
+          <span class="nav-label">Perubahan</span>
+        </a>
+        <a class="nav-item" id="nav-pengakhiran" onclick="navigate('pengakhiran')">
+          <span class="material-icons">free_cancellation</span>
+          <span class="nav-label">Pengakhiran / Pengembalian</span>
+        </a>
+        <a class="nav-item" id="nav-tiket" onclick="navigate('tiket')">
+          <span class="material-icons">receipt</span>
+          <span class="nav-label">Tiket Penyerahan Berkas</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- PENYIAPAN PPKH -->
+    <div class="nav-group" id="navgrp-penyiapan">
+      <div class="nav-group-header" onclick="toggleGroup('grp-penyiapan')">
+        <span class="material-icons group-icon">fact_check</span>
+        <span class="group-label">Penyiapan PPKH</span>
+        <span class="material-icons expand-icon">expand_more</span>
+      </div>
+      <div class="nav-sub" id="grp-penyiapan">
+        <a class="nav-item" id="nav-verifikasi-berkas" onclick="navigate('verifikasi-berkas')">
+          <span class="material-icons">fact_check</span>
+          <span class="nav-label">Verifikasi Berkas</span>
+        </a>
+        <a class="nav-item" id="nav-disposisi-kapokja" onclick="navigate('disposisi-kapokja')">
+          <span class="material-icons">fact_check</span>
+          <span class="nav-label">Disposisi Kapokja PPKH</span>
+        </a>
+        <a class="nav-item" id="nav-disposisi-spasial" onclick="navigate('disposisi-spasial')">
+          <span class="material-icons">fact_check</span>
+          <span class="nav-label">Disposisi PPKH Kapokja Datin</span>
+        </a>
+        <a class="nav-item" id="nav-telaah-spasial" onclick="navigate('telaah-spasial')">
+          <span class="material-icons">fact_check</span>
+          <span class="nav-label">Telaah Spasial</span>
+        </a>
+        <a class="nav-item" id="nav-kuota" onclick="navigate('kuota')">
+          <span class="material-icons">fact_check</span>
+          <span class="nav-label">Kuota</span>
+        </a>
+        <a class="nav-item" id="nav-telaah-dokumen" onclick="navigate('telaah-dokumen')">
+          <span class="material-icons">fact_check</span>
+          <span class="nav-label">Telaah Dokumen</span>
+        </a>
+        <a class="nav-item" id="nav-disposisi-clearence" onclick="navigate('disposisi-clearence')">
+          <span class="material-icons">fact_check</span>
+          <span class="nav-label">Disposisi Clearence</span>
+        </a>
+        <a class="nav-item" id="nav-telaah-clearence" onclick="navigate('telaah-clearence')">
+          <span class="material-icons">fact_check</span>
+          <span class="nav-label">Telaah Clearence</span>
+        </a>
+        <a class="nav-item" id="nav-info-sk-pkh" onclick="navigate('info-sk-pkh')">
+          <span class="material-icons">info</span>
+          <span class="nav-label">Informasi Nomor SK PKH</span>
+        </a>
+        <a class="nav-item" id="nav-upload-sk" onclick="navigate('upload-sk')">
+          <span class="material-icons">upload_file</span>
+          <span class="nav-label">Upload SK</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Link ke modul Pemantauan di index.html -->
+    <a class="nav-item" onclick="goToPage('index.html')">
+      <span class="material-icons">monitor</span>
+      <span class="nav-label">Pemantauan PPKH →</span>
+    </a>
+
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <div id="main">
+
+    <!-- ===== PAGE: PERMOHONAN BARU ===== -->
+    <div class="page active" id="page-permohonan-baru">
+      <div style="padding:24px;">
+        <div style="font-size:20px;font-weight:500;margin-bottom:8px;">Permohonan Baru PPKH</div>
+        <div style="color:var(--text-secondary);font-size:13px;margin-bottom:24px;">
+          Ajukan permohonan penggunaan kawasan hutan baru
+        </div>
+        <!-- Breadcrumb context SK (jika ada) -->
+        <div id="pmh-sk-context" style="display:none;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:6px;padding:12px 16px;margin-bottom:20px;font-size:13px;">
+          <span class="material-icons" style="font-size:16px;vertical-align:-3px;color:var(--primary);">info</span>
+          <strong>Konteks SK:</strong> <span id="pmh-sk-context-label">—</span>
+          <a onclick="clearActiveSK();location.reload()" style="margin-left:12px;color:var(--primary);cursor:pointer;font-size:12px;">× Hapus konteks</a>
+        </div>
+        <div style="background:white;border-radius:8px;border:1px solid var(--border);padding:32px;text-align:center;color:var(--text-secondary);">
+          <span class="material-icons" style="font-size:48px;opacity:.3;display:block;margin-bottom:12px;">construction</span>
+          <div style="font-size:15px;font-weight:500;margin-bottom:6px;">Modul dalam pengembangan</div>
+          <div style="font-size:13px;">Form permohonan baru PPKH akan tersedia di sini.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: TERKAIT KOMITMEN ===== -->
+    <div class="page" id="page-terkait-komitmen">
+      <div style="padding:24px;">
+        <div style="font-size:20px;font-weight:500;margin-bottom:8px;">Permohonan Terkait Komitmen</div>
+        <div id="pmh-ctx-terkait-komitmen" class="pmh-sk-header"></div>
+        <div class="pmh-placeholder"><span class="material-icons" style="font-size:48px;opacity:.3;display:block;margin-bottom:12px;">construction</span>Modul dalam pengembangan</div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: PERPANJANGAN ===== -->
+    <div class="page" id="page-perpanjangan">
+      <div style="padding:24px;">
+        <div style="font-size:20px;font-weight:500;margin-bottom:8px;">Perpanjangan PPKH</div>
+        <div id="pmh-ctx-perpanjangan" class="pmh-sk-header"></div>
+        <div class="pmh-placeholder"><span class="material-icons" style="font-size:48px;opacity:.3;display:block;margin-bottom:12px;">construction</span>Modul dalam pengembangan</div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: PERUBAHAN ===== -->
+    <div class="page" id="page-perubahan">
+      <div style="padding:24px;">
+        <div style="font-size:20px;font-weight:500;margin-bottom:8px;">Perubahan PPKH</div>
+        <div id="pmh-ctx-perubahan" class="pmh-sk-header"></div>
+        <div class="pmh-placeholder"><span class="material-icons" style="font-size:48px;opacity:.3;display:block;margin-bottom:12px;">construction</span>Modul dalam pengembangan</div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: PENGAKHIRAN ===== -->
+    <div class="page" id="page-pengakhiran">
+      <div style="padding:24px;">
+        <div style="font-size:20px;font-weight:500;margin-bottom:8px;">Pengakhiran / Pengembalian PPKH</div>
+        <div id="pmh-ctx-pengakhiran" class="pmh-sk-header"></div>
+        <div class="pmh-placeholder"><span class="material-icons" style="font-size:48px;opacity:.3;display:block;margin-bottom:12px;">construction</span>Modul dalam pengembangan</div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: TIKET ===== -->
+    <div class="page" id="page-tiket">
+      <div style="padding:24px;">
+        <div style="font-size:20px;font-weight:500;margin-bottom:8px;">Tiket Penyerahan Berkas</div>
+        <div class="pmh-placeholder"><span class="material-icons" style="font-size:48px;opacity:.3;display:block;margin-bottom:12px;">construction</span>Modul dalam pengembangan</div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: VERIFIKASI BERKAS ===== -->
+    <div class="page" id="page-verifikasi-berkas">
+      <div style="padding:24px;">
+        <div style="font-size:20px;font-weight:500;margin-bottom:8px;">Verifikasi Berkas Permohonan</div>
+        <div class="pmh-placeholder"><span class="material-icons" style="font-size:48px;opacity:.3;display:block;margin-bottom:12px;">construction</span>Modul dalam pengembangan</div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: DISPOSISI KAPOKJA ===== -->
+    <div class="page" id="page-disposisi-kapokja">
+      <div style="padding:24px;">
+        <div style="font-size:20px;font-weight:500;margin-bottom:8px;">Disposisi Kapokja PPKH</div>
+        <div class="pmh-placeholder"><span class="material-icons" style="font-size:48px;opacity:.3;display:block;margin-bottom:12px;">construction</span>Modul dalam pengembangan</div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: DISPOSISI SPASIAL ===== -->
+    <div class="page" id="page-disposisi-spasial">
+      <div style="padding:24px;">
+        <div style="font-size:20px;font-weight:500;margin-bottom:8px;">Disposisi PPKH Kapokja Datin</div>
+        <div class="pmh-placeholder"><span class="material-icons" style="font-size:48px;opacity:.3;display:block;margin-bottom:12px;">construction</span>Modul dalam pengembangan</div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: TELAAH SPASIAL ===== -->
+    <div class="page" id="page-telaah-spasial">
+      <div style="padding:24px;">
+        <div style="font-size:20px;font-weight:500;margin-bottom:8px;">Telaah Spasial</div>
+        <div class="pmh-placeholder"><span class="material-icons" style="font-size:48px;opacity:.3;display:block;margin-bottom:12px;">construction</span>Modul dalam pengembangan</div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: KUOTA ===== -->
+    <div class="page" id="page-kuota">
+      <div style="padding:24px;">
+        <div style="font-size:20px;font-weight:500;margin-bottom:8px;">Kuota PPKH</div>
+        <div class="pmh-placeholder"><span class="material-icons" style="font-size:48px;opacity:.3;display:block;margin-bottom:12px;">construction</span>Modul dalam pengembangan</div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: TELAAH DOKUMEN ===== -->
+    <div class="page" id="page-telaah-dokumen">
+      <div style="padding:24px;">
+        <div style="font-size:20px;font-weight:500;margin-bottom:8px;">Telaah Dokumen</div>
+        <div class="pmh-placeholder"><span class="material-icons" style="font-size:48px;opacity:.3;display:block;margin-bottom:12px;">construction</span>Modul dalam pengembangan</div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: DISPOSISI CLEARENCE ===== -->
+    <div class="page" id="page-disposisi-clearence">
+      <div style="padding:24px;">
+        <div style="font-size:20px;font-weight:500;margin-bottom:8px;">Disposisi Clearence</div>
+        <div class="pmh-placeholder"><span class="material-icons" style="font-size:48px;opacity:.3;display:block;margin-bottom:12px;">construction</span>Modul dalam pengembangan</div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: TELAAH CLEARENCE ===== -->
+    <div class="page" id="page-telaah-clearence">
+      <div style="padding:24px;">
+        <div style="font-size:20px;font-weight:500;margin-bottom:8px;">Telaah Clearence</div>
+        <div class="pmh-placeholder"><span class="material-icons" style="font-size:48px;opacity:.3;display:block;margin-bottom:12px;">construction</span>Modul dalam pengembangan</div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: INFO SK PKH ===== -->
+    <div class="page" id="page-info-sk-pkh">
+      <div style="padding:24px;">
+        <div style="font-size:20px;font-weight:500;margin-bottom:8px;">Informasi Nomor SK PKH</div>
+        <div class="pmh-placeholder"><span class="material-icons" style="font-size:48px;opacity:.3;display:block;margin-bottom:12px;">construction</span>Modul dalam pengembangan</div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: UPLOAD SK ===== -->
+    <div class="page" id="page-upload-sk">
+      <div style="padding:24px;">
+        <div style="font-size:20px;font-weight:500;margin-bottom:8px;">Upload SK</div>
+        <div class="pmh-placeholder"><span class="material-icons" style="font-size:48px;opacity:.3;display:block;margin-bottom:12px;">construction</span>Modul dalam pengembangan</div>
+      </div>
+    </div>
+
+  </div><!-- /#main -->
+</div><!-- /#app -->
+
+<style>
+  /* Styles spesifik permohonan.html */
+  .pmh-placeholder {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    padding: 40px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+  .pmh-sk-header {
+    background: #e8f5e9;
+    border: 1px solid #a5d6a7;
+    border-radius: 6px;
+    padding: 10px 16px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    display: none;
+  }
+  .pmh-sk-header.visible { display: block; }
+</style>
+
+<script src="shared.js"></script>
+<script>
+  /* ============================================================
+     PERMOHONAN.HTML — State & Navigation
+     ============================================================ */
+  let sidebarOpen = window.innerWidth > 1024;
+  let currentPage = 'permohonan-baru';
+
+  // Callback shared.js: setelah Firebase siap, load context SK
+  window._onFbReady = function() { pmhLoadContext(); };
+
+  /* ---- Navigation (internal) ---- */
+  function navigate(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const target  = document.getElementById('page-' + pageId);
+    if (target)  target.classList.add('active');
+    const navItem = document.getElementById('nav-' + pageId);
+    if (navItem) navItem.classList.add('active');
+    currentPage = pageId;
+    if (window.innerWidth <= 1024) closeSidebar();
+    document.getElementById('userDropdown').classList.remove('open');
+    closeAllDropdowns();
+  }
+
+  /* ---- Sidebar ---- */
+  function toggleSidebar() {
+    const sidebar  = document.getElementById('sidebar');
+    const main     = document.getElementById('main');
+    const overlay  = document.getElementById('overlay');
+    const isNarrow = window.innerWidth <= 1024;
+    if (isNarrow) {
+      sidebarOpen = !sidebarOpen;
+      sidebar.classList.toggle('open', sidebarOpen);
+      overlay.classList.toggle('show', sidebarOpen);
+    } else {
+      sidebarOpen = !sidebarOpen;
+      sidebar.classList.toggle('collapsed', !sidebarOpen);
+      main.classList.toggle('expanded', !sidebarOpen);
+    }
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('overlay').classList.remove('show');
+    sidebarOpen = false;
+  }
+  window.addEventListener('resize', function() {
+    if (window.innerWidth > 1024) {
+      document.getElementById('sidebar').classList.remove('open','collapsed');
+      document.getElementById('overlay').classList.remove('show');
+      document.getElementById('main').classList.remove('expanded');
+      sidebarOpen = true;
+    }
+  });
+
+  /* ---- User Dropdown ---- */
+  function toggleUserMenu() {
+    document.getElementById('userDropdown').classList.toggle('open');
+  }
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.user-btn') && !e.target.closest('.user-dropdown')) {
+      document.getElementById('userDropdown').classList.remove('open');
+    }
+    if (!e.target.closest('.more-btn') && !e.target.closest('.dropdown-menu')) {
+      closeAllDropdowns();
+    }
+  });
+
+  /* ---- Sidebar group expand ---- */
+  function toggleGroup(groupId) {
+    const sub    = document.getElementById(groupId);
+    const header = sub.previousElementSibling;
+    const isOpen = sub.classList.contains('open');
+    sub.classList.toggle('open', !isOpen);
+    header.classList.toggle('open', !isOpen);
+  }
+
+  function closeAllDropdowns() {
+    document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.remove('open'));
+  }
+
+  /* ---- Role ---- */
+  let activeRole = getRole();
+
+  function applyRole(role) {
+    activeRole = role;
+    setRole(role);
+    const btn   = document.getElementById('role-toggle-btn');
+    const icon  = document.getElementById('role-icon');
+    const label = document.getElementById('role-label');
+    const navPenyiapan = document.getElementById('navgrp-penyiapan');
+    if (role === 'superadmin') {
+      btn.style.background = '#1a6e42';
+      icon.textContent  = 'admin_panel_settings';
+      label.textContent = 'SUPERADMIN';
+      if (navPenyiapan) navPenyiapan.style.display = '';
+    } else {
+      btn.style.background = '#1565c0';
+      icon.textContent  = 'business';
+      label.textContent = 'PEMEGANG PPKH';
+      if (navPenyiapan) navPenyiapan.style.display = 'none';
+    }
+  }
+
+  function toggleAppRole() {
+    const newRole = (activeRole === 'superadmin') ? 'ppkh' : 'superadmin';
+    applyRole(newRole);
+    showToast(newRole === 'superadmin' ? '🔑 Mode SUPERADMIN aktif' : '🏢 Mode PEMEGANG PPKH aktif');
+  }
+
+  /* ---- Logout ---- */
+  function pmhLogout() {
+    clearActiveSK();
+    window.location.href = 'index.html';
+  }
+
+  /* ============================================================
+     LOAD CONTEXT SK DARI BERANDA
+     ============================================================ */
+  let pmhActiveSK = null; // objek SK yang sedang aktif (dari Firebase)
+
+  async function pmhLoadContext() {
+    setFbStatus('connected', 'Terhubung');
+    const skKey = getActiveSK();
+    if (!skKey) {
+      // Tidak ada context SK → default ke Permohonan Baru
+      navigate('permohonan-baru');
+      return;
+    }
+
+    // Ada SK context → load data SK, arahkan ke halaman perpanjangan (default)
+    try {
+      const raw = await fbLoadOneSkPpkh(skKey);
+      if (!raw) {
+        showToast('⚠ SK tidak ditemukan di database');
+        navigate('permohonan-baru');
+        return;
+      }
+      pmhActiveSK = fbToUi(raw);
+      pmhRenderSkContext();
+      navigate('perpanjangan'); // default halaman jika ada context SK
+    } catch (err) {
+      showToast('✗ Gagal memuat data SK: ' + err.message);
+      navigate('permohonan-baru');
+    }
+  }
+
+  /* Tampilkan info SK di semua page yang relevan */
+  function pmhRenderSkContext() {
+    if (!pmhActiveSK) return;
+    const label = `${pmhActiveSK.nama_lembaga} — ${pmhActiveSK.nomor_sk || pmhActiveSK.id_ippkh} (${pmhActiveSK.tipe_ppkh})`;
+
+    // Page permohonan-baru
+    const ctx = document.getElementById('pmh-sk-context');
+    const ctxLabel = document.getElementById('pmh-sk-context-label');
+    if (ctx && ctxLabel) { ctx.style.display = 'block'; ctxLabel.textContent = label; }
+
+    // Page-page dengan context header
+    ['perpanjangan','perubahan','pengakhiran','terkait-komitmen'].forEach(pageId => {
+      const el = document.getElementById('pmh-ctx-' + pageId);
+      if (el) {
+        el.classList.add('visible');
+        el.innerHTML = `<span class="material-icons" style="font-size:15px;vertical-align:-3px;color:var(--primary);">info</span>
+          <strong>SK Aktif:</strong> ${label}
+          <a onclick="clearActiveSK();location.reload()" style="margin-left:10px;color:var(--primary);cursor:pointer;font-size:12px;">× Ganti SK</a>`;
+      }
+    });
+  }
+
+  /* ============================================================
+     INIT
+     ============================================================ */
+  applyRole(activeRole);
+  initFirebase();
+</script>
+</body>
+</html>

@@ -1,0 +1,747 @@
+/* SINERGY Replica — Global Stylesheet */
+/* Digunakan oleh semua halaman HTML */
+
+
+    /* =========================================================
+       DESIGN TOKENS — warna dan tipografi utama SINERGY
+       ========================================================= */
+    :root {
+      --primary:       #259359;   /* hijau SINERGY */
+      --primary-dark:  #1a6e42;
+      --primary-light: #2ea96a;
+      --sidebar-bg:    #259359;
+      --sidebar-hover: rgba(255,255,255,0.12);
+      --sidebar-active:#1a6e42;
+      --header-bg:     #ffffff;
+      --header-shadow: 0 2px 4px rgba(0,0,0,0.12);
+      --text-primary:  #212121;
+      --text-secondary:#616161;
+      --text-white:    #ffffff;
+      --badge-red:     #e53935;
+      --badge-yellow:  #f9a825;
+      --content-bg:    #f5f5f5;
+      --card-bg:       #ffffff;
+      --card-shadow:   0 1px 4px rgba(0,0,0,0.10);
+      --border:        #e0e0e0;
+      --drawer-width:  280px;
+      --header-height: 56px;
+      --font:          'Roboto', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      background: var(--content-bg);
+      color: var(--text-primary);
+      font-size: 14px;
+    }
+
+    /* =========================================================
+       LAYOUT SHELL
+       ========================================================= */
+    #app { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+    /* --- HEADER --- */
+    #header {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: var(--header-height);
+      background: var(--header-bg);
+      box-shadow: var(--header-shadow);
+      display: flex; align-items: center;
+      padding: 0 16px;
+      z-index: 200;
+    }
+    #header .menu-btn {
+      background: none; border: none; cursor: pointer;
+      padding: 8px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-secondary);
+      transition: background 0.2s;
+    }
+    #header .menu-btn:hover { background: rgba(0,0,0,0.06); }
+    #header .menu-btn .material-icons { font-size: 24px; }
+    #header .spacer { flex: 1; }
+    #header .header-actions { display: flex; align-items: center; gap: 4px; }
+
+    /* notif bell */
+    .notif-btn {
+      position: relative;
+      background: var(--primary); border: none;
+      border-radius: 50%; width: 36px; height: 36px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      color: white; margin: 0 4px;
+    }
+    .notif-btn .material-icons { font-size: 20px; }
+    .notif-badge {
+      position: absolute; top: -2px; right: -2px;
+      background: var(--badge-red); color: white;
+      font-size: 10px; font-weight: 700;
+      border-radius: 10px; min-width: 16px; height: 16px;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 3px;
+    }
+
+    /* user avatar */
+    .user-btn {
+      background: none; border: none; cursor: pointer;
+      padding: 4px; border-radius: 50%;
+      display: flex; align-items: center;
+      margin-left: 8px;
+    }
+    .user-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: #009688; color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .user-avatar .material-icons { font-size: 22px; }
+
+    /* user dropdown */
+    .user-dropdown {
+      display: none; position: absolute; top: 52px; right: 12px;
+      background: white; border-radius: 4px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+      min-width: 180px; z-index: 500;
+    }
+    .user-dropdown.open { display: block; }
+    .user-dropdown .dd-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 16px; cursor: pointer;
+      font-size: 14px; color: var(--text-primary);
+    }
+    .user-dropdown .dd-item:hover { background: #f5f5f5; }
+    .user-dropdown .dd-item .material-icons { font-size: 20px; color: var(--text-secondary); }
+    .user-dropdown .dd-sep { border: none; border-top: 1px solid var(--border); margin: 4px 0; }
+    .user-dropdown .dd-item.logout { color: #e53935; }
+    .user-dropdown .dd-item.logout .material-icons { color: #e53935; }
+
+    /* =========================================================
+       SIDEBAR / DRAWER
+       ========================================================= */
+    #sidebar {
+      position: fixed; top: 0; left: 0; bottom: 0;
+      width: var(--drawer-width);
+      background: linear-gradient(to bottom, #259359, #259359),
+                  url('https://sinergy.planologi.kehutanan.go.id/assets/hutan_menu.png');
+      background-blend-mode: multiply;
+      background-size: cover; background-position: center;
+      z-index: 300;
+      overflow-y: auto; overflow-x: hidden;
+      transition: transform 0.3s ease;
+      display: flex; flex-direction: column;
+    }
+    #sidebar.collapsed { transform: translateX(calc(-1 * var(--drawer-width))); }
+
+    /* sidebar logo bar */
+    .sidebar-logo {
+      height: 64px; min-height: 64px;
+      background: #434343;
+      display: flex; align-items: center; padding: 0 16px; gap: 12px;
+      cursor: pointer; text-decoration: none;
+    }
+    .sidebar-logo img.favicon { width: 40px; height: 40px; border-radius: 4px; }
+    .sidebar-logo .logo-text {
+      color: white; font-size: 16px; font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    /* sidebar scrollbar */
+    #sidebar::-webkit-scrollbar { width: 4px; }
+    #sidebar::-webkit-scrollbar-track { background: transparent; }
+    #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 2px; }
+
+    /* nav item base */
+    .nav-item {
+      display: flex; align-items: center;
+      padding: 11px 16px 11px 20px;
+      color: rgba(255,255,255,0.9);
+      cursor: pointer; font-size: 13.5px;
+      transition: background 0.15s;
+      text-decoration: none;
+      user-select: none;
+    }
+    .nav-item:hover { background: var(--sidebar-hover); }
+    .nav-item.active { background: var(--sidebar-active); font-weight: 500; }
+    .nav-item .material-icons { font-size: 20px; margin-right: 12px; opacity: 0.9; }
+    .nav-item .nav-label { flex: 1; line-height: 1.3; }
+
+    /* expansion group */
+    .nav-group { border-bottom: none; }
+    .nav-group-header {
+      display: flex; align-items: center;
+      padding: 11px 16px 11px 20px;
+      color: rgba(255,255,255,0.95);
+      cursor: pointer; font-size: 13.5px; font-weight: 500;
+      transition: background 0.15s;
+      user-select: none;
+    }
+    .nav-group-header:hover { background: var(--sidebar-hover); }
+    .nav-group-header.open { background: var(--sidebar-hover); }
+    .nav-group-header .material-icons.group-icon { font-size: 20px; margin-right: 12px; opacity: 0.85; }
+    .nav-group-header .group-label { flex: 1; }
+    .nav-group-header .expand-icon {
+      font-size: 18px; transition: transform 0.25s;
+      color: rgba(255,255,255,0.7);
+    }
+    .nav-group-header.open .expand-icon { transform: rotate(180deg); }
+
+    /* sub-items container */
+    .nav-sub {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+    .nav-sub.open { max-height: 600px; }
+    .nav-sub .nav-item {
+      padding-left: 24px; font-size: 13px;
+    }
+    .nav-sub .nav-item .material-icons { font-size: 18px; opacity: 0.75; }
+
+    /* =========================================================
+       MAIN CONTENT AREA
+       ========================================================= */
+    #main {
+      margin-top: var(--header-height);
+      margin-left: var(--drawer-width);
+      transition: margin-left 0.3s ease;
+      height: calc(100vh - var(--header-height));
+      overflow-y: auto;
+      padding: 16px;
+    }
+    #main.expanded { margin-left: 0; }
+
+    /* overlay for mobile */
+    #overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4); z-index: 250;
+    }
+    #overlay.show { display: block; }
+
+    /* =========================================================
+       PAGE PLACEHOLDER (untuk menu yang belum diisi)
+       ========================================================= */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .page-title {
+      font-size: 20px; font-weight: 500;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+
+    .placeholder-card {
+      background: var(--card-bg);
+      border-radius: 8px;
+      box-shadow: var(--card-shadow);
+      padding: 48px 32px;
+      text-align: center;
+      color: var(--text-secondary);
+    }
+    .placeholder-card .material-icons { font-size: 56px; opacity: 0.25; margin-bottom: 12px; }
+    .placeholder-card p { font-size: 15px; }
+    .placeholder-card .page-tag {
+      display: inline-block; margin-top: 8px;
+      background: #e8f5e9; color: var(--primary);
+      border-radius: 12px; padding: 2px 12px;
+      font-size: 12px; font-weight: 500;
+    }
+
+    /* =========================================================
+       BERANDA PAGE
+       ========================================================= */
+
+    /* ---- Dashboard Cards (DashboardCard.vue style) ---- */
+    .summary-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px; margin-bottom: 16px;
+    }
+    @media (max-width: 900px) { .summary-row { grid-template-columns: 1fr; } }
+
+    .dashboard-card {
+      border-radius: 4px; overflow: hidden;
+      box-shadow: var(--card-shadow);
+    }
+    .dashboard-card .dc-header {
+      background: var(--primary); color: white;
+      padding: 12px 16px;
+    }
+    .dashboard-card .dc-header .dc-title-row {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 14px; margin-bottom: 6px;
+    }
+    .dashboard-card .dc-header .dc-title-row .material-icons { font-size: 20px; }
+    .dashboard-card .dc-header .dc-count {
+      text-align: center;
+      font-size: 22px; font-weight: 700;
+      color: #FFD740; /* text-yellow */
+      line-height: 1.2;
+    }
+    .dashboard-card .dc-footer {
+      background: white; border-top: 1px solid var(--border);
+      padding: 6px 12px; text-align: right;
+    }
+    .dashboard-card .dc-footer a {
+      font-size: 12px; color: var(--primary); cursor: pointer;
+      text-decoration: none; font-weight: 500;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .dashboard-card .dc-footer a:hover { text-decoration: underline; }
+
+    /* ---- Info & Pengumuman ---- */
+    .info-pengumuman-card {
+      background: white; border-radius: 4px;
+      box-shadow: var(--card-shadow);
+      padding: 14px 16px; margin-bottom: 12px;
+    }
+    .info-pengumuman-card .ip-title {
+      font-size: 18px; font-weight: 700; color: var(--primary);
+      margin-bottom: 8px;
+    }
+    .info-pengumuman-card .ip-separator {
+      border: none; border-top: 1px solid var(--border); margin: 8px 0;
+    }
+    .info-pengumuman-card .ip-empty {
+      color: var(--text-secondary); font-size: 13px; padding: 4px 0;
+    }
+    .ip-pagination {
+      display: flex; align-items: center; gap: 2px;
+      margin-top: 8px;
+    }
+    .ip-pagination button {
+      border: none; background: none; cursor: pointer;
+      color: var(--text-secondary); padding: 2px;
+      display: flex; align-items: center;
+    }
+    .ip-pagination button:disabled { opacity: 0.3; cursor: default; }
+    .ip-pagination .material-icons { font-size: 18px; }
+    .ip-pagination .ip-page-info { font-size: 12px; color: var(--text-secondary); padding: 0 4px; }
+
+    /* ---- Tabs ---- */
+    .beranda-tabs-card {
+      background: white; border-radius: 4px;
+      box-shadow: var(--card-shadow); overflow: hidden;
+    }
+    .tab-bar {
+      display: flex; border-bottom: 1px solid var(--border);
+      padding: 0; gap: 0; background: white;
+      justify-content: center;
+    }
+    .tab-btn {
+      padding: 10px 24px; background: none; border: none;
+      font-size: 13px; font-weight: 500; cursor: pointer;
+      color: var(--text-secondary); border-bottom: 2px solid transparent;
+      margin-bottom: -1px; transition: color 0.15s; letter-spacing: 0.3px;
+    }
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .tab-btn:hover { color: var(--primary); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ---- Tab Permohonan ---- */
+    .permohonan-toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px;
+    }
+    .permohonan-toolbar .pm-title {
+      font-size: 18px; font-weight: 700; color: var(--primary);
+    }
+    .tbl-wrapper { overflow-x: auto; }
+    .data-table {
+      width: 100%; border-collapse: collapse;
+      font-size: 13px;
+    }
+    .data-table thead tr {
+      background: var(--primary); color: white;
+    }
+    .data-table thead th {
+      padding: 10px 12px; text-align: left;
+      font-weight: 500; white-space: nowrap;
+    }
+    .data-table tbody tr { border-bottom: 1px solid var(--border); }
+    .data-table tbody tr:hover { background: #f9f9f9; cursor: pointer; }
+    .data-table tbody td { padding: 10px 12px; vertical-align: middle; }
+    .data-table .td-actions { white-space: nowrap; }
+    .data-table .td-actions button {
+      background: none; border: none; cursor: pointer;
+      padding: 4px; border-radius: 4px;
+      display: inline-flex; align-items: center;
+    }
+    .data-table .td-actions button .material-icons { font-size: 20px; }
+    .data-table .td-actions .btn-view .material-icons { color: var(--primary); }
+    .data-table .td-actions .btn-del .material-icons { color: #c62828; }
+    .status-badge {
+      display: inline-block; padding: 2px 8px;
+      border-radius: 10px; font-size: 11px; font-weight: 600;
+    }
+    .status-draft    { background: #e3f2fd; color: #1565c0; }
+    .status-proses   { background: #fff3e0; color: #e65100; }
+    .status-selesai  { background: #e8f5e9; color: #2e7d32; }
+    .status-batal    { background: #fce4ec; color: #c62828; }
+    .tbl-empty-row td {
+      text-align: center; padding: 32px;
+      color: var(--text-secondary); font-size: 13px;
+    }
+
+    /* ---- Tab List SK ---- */
+    .sk-toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px;
+    }
+    .sk-toolbar .sk-title {
+      font-size: 18px; font-weight: 700; color: var(--primary);
+    }
+    .sk-toolbar .sk-actions { display: flex; align-items: center; gap: 8px; }
+
+    /* search bar (hijau) */
+    .search-bar-green {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--primary); padding: 8px 16px;
+    }
+    .search-bar-green .material-icons { color: rgba(255,255,255,0.8); font-size: 20px; }
+    .search-bar-green input {
+      background: none; border: none; outline: none;
+      color: white; font-size: 14px; flex: 1;
+    }
+    .search-bar-green input::placeholder { color: rgba(255,255,255,0.6); }
+
+    /* list lembaga */
+    .lembaga-row {
+      display: flex; align-items: center;
+      padding: 10px 16px; border-bottom: 1px solid var(--border);
+      gap: 12px;
+    }
+    .lembaga-row:last-child { border-bottom: none; }
+    .lembaga-row:hover { background: #f9f9f9; }
+    .lembaga-row .lr-rank { color: var(--text-secondary); font-size: 12px; width: 24px; }
+    .lembaga-row .lr-name { flex: 1; font-size: 13.5px; }
+    .lembaga-row .btn-detail-y {
+      background: var(--badge-yellow); color: white;
+      border: none; border-radius: 3px;
+      padding: 4px 14px; font-size: 12px; font-weight: 600;
+      cursor: pointer; letter-spacing: 0.4px; text-transform: uppercase;
+    }
+    .lembaga-row .btn-detail-y:hover { background: #e69800; }
+
+    /* detail SK tabel */
+    .sk-detail-panel { display: none; }
+    .sk-detail-panel.visible { display: block; }
+    .sk-back-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--primary); display: inline-flex; align-items: center; gap: 4px;
+      font-size: 14px; font-weight: 500; margin-bottom: 4px; padding: 0;
+    }
+    .sk-back-btn .material-icons { font-size: 20px; }
+    .sk-filter-row th input, .sk-filter-row th select {
+      width: 100%; background: none; border: 1px solid rgba(255,255,255,0.4);
+      border-radius: 3px; padding: 3px 6px; font-size: 12px;
+      color: white; outline: none;
+      min-width: 80px;
+    }
+    .sk-filter-row th input::placeholder { color: rgba(255,255,255,0.6); }
+    .sk-filter-row th select option { color: var(--text-primary); background: white; }
+    .data-table .td-icon button {
+      background: none; border: none; cursor: pointer; padding: 2px;
+    }
+    .data-table .td-icon .material-icons { font-size: 22px; }
+    .icon-active   { color: var(--primary); }
+    .icon-inactive { color: #bdbdbd; }
+    .sk-pagination {
+      display: flex; justify-content: center; padding: 16px;
+    }
+    .sk-pagination button {
+      background: none; border: 1px solid var(--border);
+      padding: 4px 10px; cursor: pointer; font-size: 13px;
+      margin: 0 2px; border-radius: 3px;
+    }
+    .sk-pagination button.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .sk-pagination button:hover:not(.active):not(:disabled) { background: #f0f0f0; }
+    .sk-pagination button:disabled { opacity: 0.3; cursor: default; }
+
+    /* ---- Dropdown menu (more_vert) ---- */
+    .dropdown-menu {
+      position: absolute;
+      background: white;
+      border-radius: 4px; box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+      min-width: 260px; z-index: 400; display: none;
+    }
+    .dropdown-menu.open { display: block; }
+    /* Body-level dropdown — posisi fixed agar tidak terpotong overflow */
+    .dropdown-menu.dropdown-body {
+      position: fixed;
+      z-index: 9000;
+    }
+    .dropdown-menu .dm-item {
+      padding: 10px 16px; font-size: 13px; cursor: pointer;
+      display: flex; align-items: center; gap: 10px;
+      color: var(--text-primary);
+    }
+    .dropdown-menu .dm-item-primary {
+      color: var(--primary); font-weight: 600;
+    }
+    .dropdown-menu .dm-item-primary .material-icons { color: var(--primary) !important; }
+    .dropdown-menu .dm-item:hover { background: #f5f5f5; }
+    .dropdown-menu .dm-sep { border: none; border-top: 1px solid var(--border); }
+    .dropdown-menu .dm-item .material-icons { font-size: 18px; color: var(--text-secondary); }
+    .dropdown-menu .toggle-item { cursor: default; }
+    .dropdown-menu .toggle-item:hover { background: white; }
+
+    /* toggle switch (Unduh Hanya SK Terakhir) */
+    .toggle-switch { position: relative; display: inline-block; width: 38px; height: 22px; flex-shrink: 0; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute; cursor: pointer; inset: 0;
+      background: #ccc; border-radius: 22px;
+      transition: background 0.2s;
+    }
+    .toggle-slider::before {
+      content: ''; position: absolute;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: white; left: 3px; top: 3px;
+      transition: transform 0.2s;
+    }
+    .toggle-switch input:checked + .toggle-slider { background: var(--primary); }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(16px); }
+
+    .more-btn {
+      background: none; border: none; cursor: pointer;
+      padding: 4px; border-radius: 50%;
+      display: flex; align-items: center;
+    }
+    .more-btn:hover { background: #f0f0f0; }
+    .more-btn .material-icons { font-size: 22px; color: var(--text-secondary); }
+
+    /* Wrapper panel-lembaga harus relative untuk dropdown */
+    #panel-lembaga { position: relative; }
+
+    /* ---- Dialog / Modal ---- */
+    .dialog-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 600;
+      align-items: center; justify-content: center;
+    }
+    .dialog-overlay.open { display: flex; }
+    .dialog-box {
+      background: white; border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.24);
+      width: 90%; max-width: 520px; max-height: 90vh;
+      overflow: hidden; display: flex; flex-direction: column;
+    }
+    .dialog-header {
+      background: var(--primary); color: white;
+      padding: 12px 16px; display: flex; align-items: center;
+    }
+    .dialog-header .dh-title { flex: 1; font-size: 16px; font-weight: 500; }
+    .dialog-header button {
+      background: none; border: none; cursor: pointer; color: white;
+      display: flex; align-items: center; border-radius: 50%; padding: 4px;
+    }
+    .dialog-header button:hover { background: rgba(255,255,255,0.15); }
+    .dialog-header button .material-icons { font-size: 22px; }
+    .dialog-body { padding: 16px; overflow-y: auto; flex: 1; }
+    .dialog-body .db-info {
+      font-size: 13px; margin-bottom: 12px; color: var(--text-secondary);
+    }
+
+    /* ---- Timeline Status Permohonan ---- */
+    .timeline { list-style: none; padding: 0; margin: 8px 0; }
+    .timeline-item {
+      display: flex; gap: 12px; padding-bottom: 16px;
+      position: relative;
+    }
+    .timeline-item::before {
+      content: ''; position: absolute; left: 15px; top: 32px;
+      bottom: 0; width: 2px; background: var(--border);
+    }
+    .timeline-item:last-child::before { display: none; }
+    .tl-icon {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; z-index: 1;
+    }
+    .tl-icon .material-icons { font-size: 16px; }
+    .tl-icon.done    { background: var(--primary); color: white; }
+    .tl-icon.active  { background: #FF9800; color: white; }
+    .tl-icon.pending { background: #e0e0e0; color: #9e9e9e; }
+    .tl-body .tl-step { font-size: 13px; font-weight: 600; }
+    .tl-body .tl-step.active-step { color: var(--primary); }
+    .tl-body .tl-step.pending-step { color: #9e9e9e; }
+    .tl-body .tl-date { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+    .tl-body .tl-desc { font-size: 12px; margin-top: 4px; color: #555; }
+
+    /* ---- Toggle dibatalkan ---- */
+    .toggle-wrap {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; color: var(--text-secondary);
+    }
+    .toggle-wrap input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary); }
+
+    /* ---- Empty state ---- */
+    .list-empty {
+      padding: 32px; text-align: center;
+      color: var(--text-secondary); font-size: 13px;
+    }
+
+    /* =========================================================
+       DETAIL SK — dialog styles
+       ========================================================= */
+
+    /* Tab bar di Data SK PPKH */
+    .dsk-tab-btn {
+      padding: 14px 18px; background: none; border: none;
+      font-size: 12px; font-weight: 500; cursor: pointer;
+      color: var(--text-secondary); border-bottom: 2px solid transparent;
+      margin-bottom: -1px; transition: color 0.15s;
+      letter-spacing: 0.4px; white-space: nowrap;
+    }
+    .dsk-tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .dsk-tab-btn:hover  { color: var(--primary); }
+
+    /* Tab panels */
+    .dsk-tab-panel { display: none; }
+    .dsk-tab-panel.active { display: block; }
+
+    /* Form grid — 2 kolom */
+    .dsk-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+    @media (max-width: 700px) { .dsk-form-grid { grid-template-columns: 1fr; } }
+
+    .dsk-field {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      padding-left: 4px; padding-right: 16px;
+    }
+    .dsk-field-full { grid-column: 1 / -1; }
+
+    .dsk-field-label {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
+      color: var(--text-secondary); margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+    .dsk-ficon { font-size: 14px; color: var(--primary); }
+
+    .dsk-field-value {
+      font-size: 14px; color: var(--text-primary);
+      min-height: 22px; padding: 2px 0;
+    }
+    .dsk-field-value:empty::after {
+      content: '—'; color: #bbb;
+    }
+    .dsk-field-highlight {
+      color: #c62828; font-weight: 600;
+    }
+
+    /* Input fields saat edit mode */
+    .dsk-field-input {
+      width: 100%; border: none; border-bottom: 1px solid var(--primary);
+      outline: none; font-size: 14px; color: var(--text-primary);
+      padding: 4px 0; background: transparent;
+      font-family: var(--font);
+    }
+    .dsk-field-input:focus { border-bottom-color: var(--primary-dark); }
+    select.dsk-field-input { cursor: pointer; }
+    textarea.dsk-field-input { border: 1px solid var(--border); border-radius: 4px; padding: 6px 8px; resize: vertical; }
+
+    /* Edit mode: field value hidden, input shown */
+    .edit-mode .dsk-field-value { display: none !important; }
+    .edit-mode .dsk-field-input { display: block !important; }
+    .edit-mode textarea.dsk-field-input { display: block !important; }
+    .edit-mode select.dsk-field-input { display: block !important; }
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
+    @media (max-width: 1024px) {
+      #sidebar { transform: translateX(calc(-1 * var(--drawer-width))); }
+      #sidebar.open { transform: translateX(0); }
+      #main { margin-left: 0; }
+      #main.expanded { margin-left: 0; }
+    }
+
+    /* =========================================================
+       FIREBASE SETUP WIZARD
+       ========================================================= */
+    #fb-setup-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.65);
+      z-index: 9000;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #fb-setup-overlay.hidden { display: none; }
+
+    .fb-setup-card {
+      background: #fff;
+      border-radius: 12px;
+      width: 480px; max-width: 94vw;
+      padding: 36px 32px 28px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.22);
+      display: flex; flex-direction: column; gap: 0;
+    }
+    .fb-setup-logo {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 24px;
+    }
+    .fb-setup-logo img { width: 32px; height: 32px; }
+    .fb-setup-logo span { font-size: 20px; font-weight: 700; color: var(--primary); letter-spacing: .5px; }
+    .fb-setup-title { font-size: 17px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+    .fb-setup-desc  { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 24px; }
+    .fb-setup-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+    .fb-setup-input {
+      width: 100%; border: 1px solid var(--border);
+      border-radius: 6px; padding: 10px 12px;
+      font-size: 14px; font-family: monospace;
+      outline: none; transition: border-color .2s;
+      color: var(--text-primary);
+    }
+    .fb-setup-input:focus { border-color: var(--primary); }
+    .fb-setup-input.error { border-color: #e53935; background: #fff5f5; }
+    .fb-setup-hint { font-size: 12px; color: var(--text-secondary); margin-top: 6px; margin-bottom: 24px; }
+    .fb-setup-hint code { background: #f5f5f5; padding: 1px 5px; border-radius: 3px; font-size: 11px; }
+    .fb-setup-actions { display: flex; gap: 10px; justify-content: flex-end; align-items: center; }
+    .fb-setup-btn-test {
+      background: none; border: 1px solid var(--primary);
+      color: var(--primary); border-radius: 6px;
+      padding: 9px 18px; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: background .15s;
+    }
+    .fb-setup-btn-test:hover { background: rgba(37,147,89,.07); }
+    .fb-setup-btn-save {
+      background: var(--primary); color: #fff;
+      border: none; border-radius: 6px;
+      padding: 9px 22px; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: background .15s;
+    }
+    .fb-setup-btn-save:hover { background: var(--primary-dark); }
+    .fb-setup-btn-save:disabled { opacity: .5; cursor: not-allowed; }
+    .fb-setup-test-result {
+      font-size: 12px; margin-right: auto;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .fb-setup-test-result.ok   { color: #2e7d32; }
+    .fb-setup-test-result.fail { color: #c62828; }
+
+    /* =========================================================
+       CONNECTION STATUS INDICATOR (header)
+       ========================================================= */
+    #fb-status-btn {
+      display: flex; align-items: center; gap: 6px;
+      background: none; border: 1px solid var(--border);
+      border-radius: 20px; padding: 4px 10px 4px 8px;
+      cursor: pointer; font-size: 12px; font-weight: 500;
+      color: var(--text-secondary); transition: background .15s;
+      margin-right: 4px;
+    }
+    #fb-status-btn:hover { background: rgba(0,0,0,.05); }
+    .fb-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      flex-shrink: 0; transition: background .3s;
+    }
+    .fb-dot.connected    { background: #43a047; box-shadow: 0 0 0 2px rgba(67,160,71,.25); }
+    .fb-dot.disconnected { background: #e53935; box-shadow: 0 0 0 2px rgba(229,57,53,.2); }
+    .fb-dot.checking     { background: #fb8c00; animation: fb-pulse .8s infinite alternate; }
+    @keyframes fb-pulse   { from { opacity: 1; } to { opacity: .3; } }
+  
