@@ -8404,7 +8404,11 @@
     const kwjTerkunci = lapStatus === 'proses_perbaikan' && kwjStatus !== 'perlu_perbaikan';
     // Kewajiban sudah dilaporkan (siap_validasi) → read-only sampai user klik "Edit Laporan"
     const kwjSudahDilaporkan = kwjStatus === 'siap_validasi';
-    const isViewMode = ppViewMode === 'view' || lapTerkunci || kwjTerkunci || kwjStatus === 'sesuai' || kwjSudahDilaporkan || activeRole === 'superadmin';
+    // Superadmin dapat mengedit isi laporan saat proses_validasi/siap_validasi (koreksi minor),
+    // tetapi tetap terkunci saat tervalidasi atau kewajiban sudah disetujui (sesuai)
+    const isViewMode = activeRole === 'superadmin'
+      ? (ppViewMode === 'view' || lapStatus === 'tervalidasi' || kwjStatus === 'sesuai')
+      : (ppViewMode === 'view' || lapTerkunci || kwjTerkunci || kwjStatus === 'sesuai' || kwjSudahDilaporkan);
 
     // Tampilkan catatan admin jika ada
     const catatanAdmin = ppRealisasiData?.[kwjKey]?.catatan_admin || '';
@@ -8416,6 +8420,15 @@
          </div>`
       : '';
 
+    // Banner khusus superadmin saat mengedit laporan yang sedang divalidasi
+    const superadminEditBanner = (activeRole === 'superadmin' && !isViewMode &&
+      (lapStatusForm === 'proses_validasi' || lapStatusForm === 'siap_validasi'))
+      ? `<div style="background:#e8f5e9;border-left:4px solid var(--primary);padding:10px 14px;margin-bottom:12px;border-radius:4px;font-size:12px;color:#1b5e20;display:flex;align-items:center;gap:8px;">
+           <span class="material-icons" style="font-size:16px;color:var(--primary);flex-shrink:0;">edit_note</span>
+           <span><strong>Mode Edit Admin</strong> — Anda dapat mengedit isi laporan ini untuk koreksi minor. Status laporan tidak berubah.</span>
+         </div>`
+      : '';
+
     // Update tombol finalisasi di toolbar
     ppUpdateFinalisasiBtn();
 
@@ -8423,7 +8436,7 @@
     const tableId = `pp-tbl-${ppActiveKwjIndex}`;
     const tabelHtml = ppBuildMatriksTable(komponen, kwjKey, kwjName, sem, tahun, sem1Data, sem2Data, akumulasiData, {}, isViewMode, tableId);
 
-    container.innerHTML = `${catatanBanner}<div style="overflow-x:auto;border-radius:6px;box-shadow:var(--card-shadow);">${tabelHtml}</div>
+    container.innerHTML = `${superadminEditBanner}${catatanBanner}<div style="overflow-x:auto;border-radius:6px;box-shadow:var(--card-shadow);">${tabelHtml}</div>
       ${!isViewMode ? `<div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;padding:8px 4px;font-size:11px;color:var(--text-secondary);align-items:center;">
         <span style="font-weight:600;color:var(--text-primary);">Keterangan:</span>
         <span style="display:inline-flex;align-items:center;gap:5px;">
@@ -8798,11 +8811,18 @@
     const lapTerkunci = lapStatus === 'proses_validasi' || lapStatus === 'siap_validasi' || lapStatus === 'tervalidasi';
     const kwjTerkunci = lapStatus === 'proses_perbaikan' && kwjStatus !== 'perlu_perbaikan';
 
-    if (lapTerkunci)  { showToast('⚠️ Laporan sedang dalam proses validasi.'); return; }
-    if (kwjTerkunci)  { showToast('⚠️ Hanya kewajiban oranye yang bisa diedit saat ini.'); return; }
     if (kwjStatus === 'sesuai') { showToast('⚠️ Kewajiban ini sudah disetujui Admin.'); return; }
-    if (kwjStatus === 'siap_validasi') { showToast('⚠️ Kewajiban ini sudah dilaporkan. Klik "Edit Laporan" untuk mengubah data.'); return; }
-    if (activeRole === 'superadmin') return;
+    if (lapStatus === 'tervalidasi') { showToast('⚠️ Laporan sudah tervalidasi dan tidak dapat diubah.'); return; }
+    if (activeRole === 'superadmin') {
+      // Superadmin hanya bisa inline-edit saat laporan sedang proses validasi
+      const isValidasi = lapStatus === 'proses_validasi' || lapStatus === 'siap_validasi';
+      if (!isValidasi) return;
+      // Lanjut buka popover edit
+    } else {
+      if (lapTerkunci)  { showToast('⚠️ Laporan sedang dalam proses validasi.'); return; }
+      if (kwjTerkunci)  { showToast('⚠️ Hanya kewajiban oranye yang bisa diedit saat ini.'); return; }
+      if (kwjStatus === 'siap_validasi') { showToast('⚠️ Kewajiban ini sudah dilaporkan. Klik "Edit Laporan" untuk mengubah data.'); return; }
+    }
 
     // Ambil nilai saat ini
     const data = semOrAkum === 'akumulasi'
